@@ -13,6 +13,7 @@
  */
 namespace App\View;
 
+use BootstrapUI\View\UIViewTrait;
 use Cake\View\View;
 
 /**
@@ -20,10 +21,12 @@ use Cake\View\View;
  *
  * Your application’s default view class
  *
+ * @property \App\View\Helper\AuthHelper $Auth
  * @link https://book.cakephp.org/3.0/en/views.html#the-app-view
  */
 class AppView extends View
 {
+    use UIViewTrait;
 
     /**
      * Initialization hook method.
@@ -36,5 +39,14 @@ class AppView extends View
      */
     public function initialize()
     {
+        $this->initializeUI(['layout' => false]);
+
+        $this->loadHelper('Auth');
+
+        $this->Form->setTemplates([
+            'nestingLabel' => '{{hidden}}{{input}}<label{{attrs}}>{{text}}</label>',
+            //'error' => '<div class="alert alert-danger">{{content}}</div>',
+            //'inputContainer' => '<div class="form-control">{{content}}</div>',
+        ]);
     }
 }
