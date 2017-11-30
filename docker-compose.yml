@@ -1,0 +1,47 @@
+hack_nginx:
+  container_name: hack_nginx
+  build: ./.dockerfiles
+  dockerfile: Dockerfile.nginx
+  ports:
+    - 80:80
+  links:
+    - hack_php7
+  volumes:
+    - ./:/var/www
+
+hack_php7:
+  container_name: hack_php7
+  build: ./.dockerfiles
+  dockerfile: Dockerfile.php71-fpm
+  links:
+    - hack_db
+  ports:
+    - 9000
+  volumes:
+    - ./:/var/www
+    - ./.dockerfiles/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+
+hack_db:
+  container_name: hack_db
+  image: mysql:5.7
+  command: mysqld --sql_mode="NO_ENGINE_SUBSTITUTION"
+  ports:
+    - 3306
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: hack
+  volumes:
+    - ./.mysql:/var/lib/mysql
+
+hack_phpmyadmin:
+  container_name: hack_phpmyadmin
+  image: phpmyadmin/phpmyadmin
+  environment:
+    - PMA_ARBITRARY=1
+    - PMA_HOST=hack_db
+    - PMA_USER=root
+    - PMA_PASSWORD=root
+  links:
+    - hack_db
+  ports:
+    - 8080:80
